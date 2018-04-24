@@ -38,9 +38,9 @@ var MLBStats = (function() {
     }
 
     function fetchBoxScore() {
-			MLBApi.getBoxscore(529740).then(function(resp) {
-				console.log(resp);
-			});
+        MLBApi.getBoxscore(529740).then(function(resp) {
+            console.log(resp);
+        });
     }
 
     /**
@@ -106,7 +106,7 @@ var MLBStats = (function() {
             respGames.forEach(function(game) {
                 // console.log(element);
                 var gameDate = moment(game.gameDate.substring(0, 10), "YYYYMMDD").fromNow(),
-                		gameID = game.gamePk,
+                    gameID = game.gamePk,
                     venue = game.venue.name,
                     teams = game.teams,
                     homeTeam = teams.home.team.name,
@@ -118,8 +118,8 @@ var MLBStats = (function() {
                     awayTeamLosses = teams.away.leagueRecord.losses,
                     awayTeamPercentage = teams.away.leagueRecord.pct;
                 // construct data obj
-            		var data = {
-                		id: gameID,
+                var data = {
+                    id: gameID,
                     date: gameDate,
                     venue: venue,
                     homeTeam: homeTeam,
