@@ -24,6 +24,7 @@ var MLBStats = (function() {
                         break;
                     case 'Boxscores':
                         console.log('boxscores function');
+                        fetchBoxScore();
                         break;
                     case 'Standings':
                         console.log('standings... pick al or nl');
@@ -36,6 +37,15 @@ var MLBStats = (function() {
             });
     }
 
+    function fetchBoxScore() {
+			MLBApi.getBoxscore(529740).then(function(resp) {
+				console.log(resp);
+			});
+    }
+
+    /**
+     * [getStandingsPrompt Prompts the user to choose if they wish to view the NL or AL. This is a requirement from the api]
+     */
     function getStandingsPrompt() {
         inquirer
             .prompt([{
@@ -67,6 +77,9 @@ var MLBStats = (function() {
             });
     }
 
+    /**
+     * [fetchStandings logs out the standings of the AL or the NL]
+     */
     function fetchStandings(league, year) {
         MLBApi.getStandings(league, year)
             .then(function(resp) {
@@ -74,12 +87,6 @@ var MLBStats = (function() {
             });
     }
 
-    function viewTeamSchedule(team) {
-        console.log(`view ${team} schedule`);
-        MLBApi.getTeams().then(function(resp) {
-            console.log(resp);
-        });
-    }
 
     function whoIsPlaying() {
         var games = MLBApi.getGames();
@@ -88,16 +95,18 @@ var MLBStats = (function() {
             // console.log(resp);
             // console.log(resp['dates'][0].events);
             var respGames = resp['dates'][0].games;
+            console.log(respGames);
             var gamesInProgress = resp.totalGamesInProgress;
             // initialize table
             var table = new Table({
-                head: ['Game Date', 'Stadium', 'Home Team', 'Away Team'],
-                colWidths: [20, 20, 20, 20]
+                head: ['Game ID', 'Game Date', 'Stadium', 'Home Team', 'Away Team'],
+                colWidths: [20, 20, 20, 20, 20]
             });
 
             respGames.forEach(function(game) {
                 // console.log(element);
                 var gameDate = moment(game.gameDate.substring(0, 10), "YYYYMMDD").fromNow(),
+                		gameID = game.gamePk,
                     venue = game.venue.name,
                     teams = game.teams,
                     homeTeam = teams.home.team.name,
@@ -109,15 +118,16 @@ var MLBStats = (function() {
                     awayTeamLosses = teams.away.leagueRecord.losses,
                     awayTeamPercentage = teams.away.leagueRecord.pct;
                 // construct data obj
-                var data = {
+            		var data = {
+                		id: gameID,
                     date: gameDate,
                     venue: venue,
                     homeTeam: homeTeam,
                     awayTeam: awayTeam
-                }
+                };
                 // push data to table
                 table.push(
-                    [data.date, data.venue, data.homeTeam, data.awayTeam]
+                    [data.id, data.date, data.venue, data.homeTeam, data.awayTeam]
                 );
             });
             // print table
@@ -125,6 +135,9 @@ var MLBStats = (function() {
         });
     }
 
+    /**
+     * [init functions to start]
+     */
     function init() {
         startInquirer();
     }
